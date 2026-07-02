@@ -10,6 +10,12 @@ export function initLocationScroll() {
     const heroGridOverlay = document.querySelector(".hero-grid-overlay");
     const anchorMarker = document.querySelector(".marker-1");
     const progressBar = document.querySelector(".hero-scroll-progress-bar");
+    const lastStyle = {
+        maskSize: "",
+        saturation: "",
+        overlayOpacity: "",
+        gridOpacity: "",
+    };
 
     function setupHeroScroll() {
         const viewportHeight = window.innerHeight;
@@ -78,17 +84,23 @@ export function initLocationScroll() {
                     heroImgOverlayOpacity = 0.35;
                 }
 
-                gsap.set(heroMask, {
-                    "--mask-size": `${heroMaskSize}%`,
-                });
+                const nextMaskSize = `${heroMaskSize.toFixed(3)}%`;
+                if (nextMaskSize !== lastStyle.maskSize) {
+                    heroMask.style.setProperty("--mask-size", nextMaskSize);
+                    lastStyle.maskSize = nextMaskSize;
+                }
 
-                gsap.set(heroImgElement, {
-                    filter: `saturate(${heroImgSaturation})`,
-                });
+                const nextSaturation = heroImgSaturation.toFixed(3);
+                if (nextSaturation !== lastStyle.saturation) {
+                    heroImgElement.style.filter = `saturate(${nextSaturation})`;
+                    lastStyle.saturation = nextSaturation;
+                }
 
-                gsap.set(heroImg, {
-                    "--overlay-opacity": heroImgOverlayOpacity,
-                });
+                const nextOverlayOpacity = heroImgOverlayOpacity.toFixed(3);
+                if (nextOverlayOpacity !== lastStyle.overlayOpacity) {
+                    heroImg.style.setProperty("--overlay-opacity", nextOverlayOpacity);
+                    lastStyle.overlayOpacity = nextOverlayOpacity;
+                }
 
                 let heroGridOpacity;
                 if (self.progress <= 0.54) {
@@ -103,13 +115,13 @@ export function initLocationScroll() {
                     heroGridOpacity = 0;
                 }
 
-                gsap.set(heroGridOverlay, {
-                    opacity: heroGridOpacity,
-                });
-
-                gsap.set(anchorMarker, {
-                    opacity: heroGridOpacity,
-                });
+                const nextGridOpacity = heroGridOpacity.toFixed(3);
+                if (nextGridOpacity !== lastStyle.gridOpacity) {
+                    gsap.set([heroGridOverlay, anchorMarker], {
+                        opacity: nextGridOpacity,
+                    });
+                    lastStyle.gridOpacity = nextGridOpacity;
+                }
             },
         });
     }

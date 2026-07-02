@@ -6,6 +6,7 @@ import CustomEase from "gsap/CustomEase";
 import { initPreloaderIntro } from "./sections/preloader.js";
 import { initLocationScroll } from "./sections/locationScroll.js";
 import { initSplitCards } from "./sections/splitCards.js";
+import { initClientPanels } from "./sections/clientPanels.js";
 import { initSmoothScroll, resetScrollPosition } from "./shared/scroll.js";
 import { initLanguageSystem } from "./shared/i18n.js";
 
@@ -22,5 +23,6 @@ window.addEventListener("load", () => {
     initPreloaderIntro(lenis);
     initLocationScroll();
     initSplitCards();
+    initClientPanels();
     ScrollTrigger.refresh();
 });

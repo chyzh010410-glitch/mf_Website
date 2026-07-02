@@ -7,9 +7,11 @@ export function initSplitCards() {
     const stickyHeader = document.querySelector(".sticky-header h1");
     const progressBar = document.querySelector(".scroll-progress-bar");
     let cardTimeline;
+    let isFloating = false;
 
     function resetDesktopStyles() {
         sticky.classList.remove("is-floating");
+        isFloating = false;
         gsap.set(stickyHeader, { y: 40, opacity: 0 });
         gsap.set(cardContainer, { width: "75%", gap: 0 });
         gsap.set(".card", { rotationY: 0, y: 0, rotationZ: 0 });
@@ -24,6 +26,7 @@ export function initSplitCards() {
 
         if (window.innerWidth < 1000) {
             sticky.classList.remove("is-floating");
+            isFloating = false;
             document
                 .querySelectorAll(".card, .card-container, .sticky-header h1")
                 .forEach((el) => el.removeAttribute("style"));
@@ -42,7 +45,11 @@ export function initSplitCards() {
                 pin: true,
                 pinSpacing: true,
                 onUpdate: (self) => {
-                    sticky.classList.toggle("is-floating", self.progress >= 0.42);
+                    const shouldFloat = self.progress >= 0.42;
+                    if (shouldFloat !== isFloating) {
+                        sticky.classList.toggle("is-floating", shouldFloat);
+                        isFloating = shouldFloat;
+                    }
                     gsap.set(progressBar, {
                         "--progress": self.progress,
                     });

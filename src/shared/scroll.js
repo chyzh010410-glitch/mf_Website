@@ -3,7 +3,11 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
 export function initSmoothScroll() {
-    const lenis = new Lenis();
+    const lenis = new Lenis({
+        lerp: 0.13,
+        wheelMultiplier: 1,
+        touchMultiplier: 1.2,
+    });
 
     lenis.on("scroll", ScrollTrigger.update);
     gsap.ticker.add((time) => {
