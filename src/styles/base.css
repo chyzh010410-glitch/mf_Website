@@ -24,21 +24,40 @@ html,
 body {
     overflow-x: hidden;
     overflow-y: auto;
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(184, 241, 209, 0.72) rgba(4, 17, 15, 0.52);
 }
 
 ::-webkit-scrollbar {
-    display: none;
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: rgba(4, 17, 15, 0.52);
+}
+
+::-webkit-scrollbar-thumb {
+    min-height: 4rem;
+    border: 2px solid rgba(4, 17, 15, 0.52);
+    border-radius: 999px;
+    background: rgba(184, 241, 209, 0.72);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(234, 255, 244, 0.92);
 }
 
 body {
     font-family: var(--font-ui);
     background-color: var(--dark);
     color: var(--light);
-    -ms-overflow-style: none;
+    -ms-overflow-style: auto;
 }
 
+html:has(body.is-intro-active),
 body.is-intro-active {
+    height: 100%;
     overflow: hidden;
 }
 

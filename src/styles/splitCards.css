@@ -42,6 +42,38 @@
     transform-origin: top;
 }
 
+.card-float {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    transform-style: preserve-3d;
+    animation: cardFloat 2.4s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+.sticky.is-floating .card-float {
+    animation-play-state: running;
+}
+
+#card-2 .card-float {
+    animation-delay: 0.18s;
+}
+
+#card-3 .card-float {
+    animation-delay: 0.36s;
+}
+
+@keyframes cardFloat {
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-0.75rem);
+    }
+}
+
 #card-1 {
     border-radius: 20px 0 0 20px;
 }
@@ -200,4 +232,5 @@ body.lang-en .card-back p {
     .card-back {
         transform: none;
     }
+
 }

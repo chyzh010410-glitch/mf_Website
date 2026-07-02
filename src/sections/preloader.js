@@ -6,6 +6,8 @@ import { resetScrollPosition } from "../shared/scroll.js";
 export function initPreloaderIntro(lenis) {
     let preloaderComplete = false;
 
+    lenis?.stop();
+
     const introHero = document.querySelector(".intro-hero");
     const preloaderTexts = document.querySelectorAll(".preloader p");
     const preloaderBtn = document.querySelector(".preloader-btn-container");
@@ -191,6 +193,7 @@ export function initPreloaderIntro(lenis) {
                 onComplete: () => {
                     resetScrollPosition(lenis);
                     document.body.classList.remove("is-intro-active");
+                    lenis?.start();
                     gsap.set([".preloader-backdrop", ".intro-hero"], {
                         display: "none",
                     });
