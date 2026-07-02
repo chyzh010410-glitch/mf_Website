@@ -191,21 +191,73 @@ export function initPreloaderIntro(lenis) {
                 },
                 "-=1.75",
             )
+            .add("rippleStart", "+=0.32")
+            .set(".ripple-reveal", {
+                opacity: 1,
+                "--ripple-size": "0vmax",
+                "--ripple-opacity": 0,
+                "--ripple-ring-scale": 0.42,
+                "--ripple-echo-scale": 0.36,
+            }, "rippleStart")
+            .set(".preloader-backdrop", {
+                opacity: 1,
+            }, "rippleStart")
+            .set(".intro-hero", {
+                "--reveal-hole-size": "0vmax",
+                "--reveal-hole-opacity": 0,
+                "--reveal-wave-softness": "3vmax",
+            }, "rippleStart")
+            .to(".ripple-reveal", {
+                "--ripple-size": "150vmax",
+                "--ripple-ring-scale": 2.7,
+                "--ripple-echo-scale": 3,
+                duration: 1.36,
+                ease: "power3.inOut",
+            }, "rippleStart")
+            .to(".ripple-reveal", {
+                "--ripple-opacity": 0.74,
+                duration: 0.18,
+                ease: "power2.out",
+            }, "rippleStart+=0.38")
+            .to(".intro-hero", {
+                "--reveal-hole-size": "150vmax",
+                "--reveal-wave-softness": "13vmax",
+                duration: 1.36,
+                ease: "power2.inOut",
+            }, "rippleStart+=0.04")
+            .to(".preloader-backdrop", {
+                opacity: 0,
+                duration: 0.5,
+                ease: "power2.out",
+            }, "rippleStart+=0.34")
+            .to(".intro-hero h1", {
+                opacity: 0,
+                scale: 0.98,
+                duration: 0.75,
+                ease: "power2.inOut",
+            }, "rippleStart+=0.28")
+            .to(".ripple-reveal", {
+                "--ripple-opacity": 0,
+                opacity: 0,
+                duration: 0.32,
+                ease: "power2.out",
+            }, "rippleStart+=0.9")
             .to([".intro-hero", ".preloader-backdrop"], {
                 opacity: 0,
-                duration: 0.8,
+                duration: 0.35,
                 ease: "power2.inOut",
-                delay: 1,
                 onComplete: () => {
                     resetScrollPosition(lenis);
-                    ScrollTrigger.refresh();
                     document.body.classList.remove("is-intro-active");
                     gsap.set([".preloader-backdrop", ".intro-hero"], {
                         display: "none",
                     });
+                    gsap.set(".ripple-reveal", { display: "none" });
                     requestAnimationFrame(() => {
-                        ScrollTrigger.refresh();
-                        lenis?.start();
+                        requestAnimationFrame(() => {
+                            ScrollTrigger.refresh();
+                            lenis?.start();
+                        });
                     });
                 },
             });

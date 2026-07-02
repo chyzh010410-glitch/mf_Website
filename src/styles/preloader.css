@@ -38,9 +38,9 @@ body.is-preloader-loading .pbc-svg-strokes {
 
 .preloader {
     background:
-        radial-gradient(circle at 50% 50%, rgba(47, 159, 143, 0.16), transparent 28rem),
-        linear-gradient(135deg, #04110f, #0a211d 58%, #102f2a);
-    color: #eafff4;
+        radial-gradient(circle at 50% 50%, rgba(232, 255, 241, 0.62), transparent 28rem),
+        linear-gradient(135deg, #a8ddba, #c8ebcb 56%, #e1f3d8);
+    color: #061a14;
     display: flex;
     flex-direction: column;
     justify-content: space-between;
@@ -111,7 +111,7 @@ body.is-preloader-loading .pbc-svg-strokes {
 #pbc-outro-label {
     font-size: 0.88rem;
     letter-spacing: 0.12em;
-    color: #eafff4;
+    color: #061a14;
 }
 
 .pbc-svg-strokes,
@@ -124,6 +124,9 @@ body.is-preloader-loading .pbc-svg-strokes {
 .intro-hero {
     min-height: 100svh;
     padding: 1.5rem;
+    --reveal-hole-size: 0vmax;
+    --reveal-hole-opacity: 1;
+    --reveal-wave-softness: 0vmax;
     background:
         linear-gradient(rgba(4, 17, 15, 0.68), rgba(4, 17, 15, 0.68)),
         url("/assets/forest-hero.jpg") center / cover;
@@ -133,8 +136,84 @@ body.is-preloader-loading .pbc-svg-strokes {
     align-items: center;
     text-align: center;
     transform: scale(0.75);
+    mask-image:
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(0, 0, 0, var(--reveal-hole-opacity)) 0 var(--reveal-hole-size),
+            rgba(0, 0, 0, 0.16) calc(var(--reveal-hole-size) + calc(var(--reveal-wave-softness) * 0.24)),
+            rgba(0, 0, 0, 0.62) calc(var(--reveal-hole-size) + calc(var(--reveal-wave-softness) * 0.58)),
+            #000 calc(var(--reveal-hole-size) + var(--reveal-wave-softness))
+        );
+    -webkit-mask-image:
+        radial-gradient(
+            circle at 50% 50%,
+            rgba(0, 0, 0, var(--reveal-hole-opacity)) 0 var(--reveal-hole-size),
+            rgba(0, 0, 0, 0.16) calc(var(--reveal-hole-size) + calc(var(--reveal-wave-softness) * 0.24)),
+            rgba(0, 0, 0, 0.62) calc(var(--reveal-hole-size) + calc(var(--reveal-wave-softness) * 0.58)),
+            #000 calc(var(--reveal-hole-size) + var(--reveal-wave-softness))
+        );
     will-change: transform, opacity;
     z-index: 10;
+}
+
+.ripple-reveal {
+    position: fixed;
+    inset: 0;
+    z-index: 45;
+    pointer-events: none;
+    opacity: 0;
+    --ripple-size: 0vmax;
+    --ripple-opacity: 0;
+    --ripple-ring-scale: 0.2;
+    --ripple-echo-scale: 0.2;
+    background: transparent;
+    clip-path: circle(var(--ripple-size) at 50% 50%);
+    will-change: clip-path, opacity;
+    overflow: hidden;
+    isolation: isolate;
+    mix-blend-mode: screen;
+}
+
+.ripple-reveal::before,
+.ripple-reveal::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: min(42vmax, 44rem);
+    aspect-ratio: 1;
+    border-radius: 50%;
+    pointer-events: none;
+    will-change: transform, opacity;
+}
+
+.ripple-reveal::before {
+    transform: translate(-50%, -50%) scale(var(--ripple-ring-scale));
+    opacity: var(--ripple-opacity);
+    border: 1px solid rgba(239, 255, 247, 0.82);
+    background:
+        radial-gradient(circle, transparent 56%, rgba(239, 255, 247, 0.2) 56.7%, transparent 57.9%),
+        radial-gradient(circle, transparent 60.4%, rgba(255, 255, 255, 0.34) 61%, transparent 61.8%),
+        radial-gradient(circle, transparent 66%, rgba(168, 221, 186, 0.16) 66.8%, transparent 68.4%);
+    box-shadow:
+        0 0 0 0.08rem rgba(239, 255, 247, 0.46),
+        0 0 0 0.32rem rgba(232, 255, 241, 0.12),
+        0 0 0 0.9rem rgba(168, 221, 186, 0.08),
+        0 0 1.35rem rgba(239, 255, 247, 0.18);
+}
+
+.ripple-reveal::after {
+    width: min(48vmax, 52rem);
+    transform: translate(-50%, -50%) scale(var(--ripple-echo-scale));
+    opacity: calc(var(--ripple-opacity) * 0.56);
+    border: 1px solid rgba(168, 221, 186, 0.28);
+    background:
+        radial-gradient(circle, transparent 53%, rgba(232, 255, 241, 0.075) 57%, transparent 63%),
+        radial-gradient(circle, transparent 69%, rgba(168, 221, 186, 0.08) 70.5%, transparent 73%);
+    box-shadow:
+        0 0 0 0.65rem rgba(232, 255, 241, 0.055),
+        0 0 0 2rem rgba(168, 221, 186, 0.04),
+        0 0 2.8rem rgba(168, 221, 186, 0.12);
 }
 
 .intro-hero .preloader-revealer {
@@ -146,12 +225,15 @@ body.is-preloader-loading .pbc-svg-strokes {
 }
 
 .intro-hero h1 {
+    position: relative;
+    z-index: 2;
     width: min(86%, 980px);
     font-family: var(--font-ui);
     font-size: clamp(4rem, 10vw, 9rem);
     font-weight: 700;
     line-height: 1.04;
     letter-spacing: 0.08em;
+    will-change: transform, opacity;
 }
 
 body.lang-en .preloader p,
