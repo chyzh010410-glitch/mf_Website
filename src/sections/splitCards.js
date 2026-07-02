@@ -2,6 +2,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const EXIT_CARD_MIN_SCALE = 0.35;
+const FLOAT_START_PROGRESS = 0.92;
 
 export function initSplitCards() {
     const sticky = document.querySelector(".sticky");
@@ -18,6 +19,7 @@ export function initSplitCards() {
         gsap.set(stickyHeader, { y: 40, opacity: 0 });
         gsap.set(cardContainer, { width: "75%", gap: 0, opacity: 1 });
         gsap.set(".card", { rotationY: 0, x: 0, xPercent: 0, y: 0, yPercent: 0, scale: 1, opacity: 1 });
+        gsap.set(".card-float", { rotationY: 0 });
         gsap.set("#card-1", { rotationZ: 0 });
         gsap.set("#card-2", { rotationZ: 0 });
         gsap.set("#card-3", { rotationZ: 0 });
@@ -36,7 +38,7 @@ export function initSplitCards() {
             sticky.classList.remove("is-floating");
             isFloating = false;
             document
-                .querySelectorAll(".card, .card-container, .sticky-header h1")
+                .querySelectorAll(".card, .card-float, .card-container, .sticky-header h1")
                 .forEach((el) => el.removeAttribute("style"));
             return;
         }
@@ -52,8 +54,10 @@ export function initSplitCards() {
                 scrub: 1,
                 pin: true,
                 pinSpacing: true,
+                anticipatePin: 1,
+                invalidateOnRefresh: true,
                 onUpdate: (self) => {
-                    const shouldFloat = self.progress >= 0.42;
+                    const shouldFloat = self.progress >= FLOAT_START_PROGRESS;
                     if (shouldFloat !== isFloating) {
                         sticky.classList.toggle("is-floating", shouldFloat);
                         isFloating = shouldFloat;
@@ -74,7 +78,7 @@ export function initSplitCards() {
             ease: "power2.out",
         }, 0.35);
 
-        cardTimeline.to(".card", {
+        cardTimeline.to(".card-float", {
             rotationY: 180,
             duration: 0.25,
             ease: "power2.inOut",

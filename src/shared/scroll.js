@@ -4,7 +4,9 @@ import Lenis from "lenis";
 
 export function initSmoothScroll() {
     const lenis = new Lenis({
-        lerp: 0.13,
+        lerp: 0.16,
+        smoothWheel: true,
+        syncTouch: false,
         wheelMultiplier: 1,
         touchMultiplier: 1.2,
     });

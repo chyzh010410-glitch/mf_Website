@@ -13,7 +13,13 @@ export function initPreloaderIntro(lenis) {
     const preloaderBtn = document.querySelector(".preloader-btn-container");
     const btnOutlineTrack = document.querySelector(".stroke-track");
     const btnOutlineProgress = document.querySelector(".stroke-progress");
+    const heroImage = document.querySelector(".hero-img img");
+    const cardImage = new Image();
     const svgPathLength = btnOutlineTrack.getTotalLength();
+
+    heroImage?.decode?.().catch(() => {});
+    cardImage.src = "/assets/forest-moss-card.jpg";
+    cardImage.decode?.().catch(() => {});
 
     gsap.set([btnOutlineTrack, btnOutlineProgress], {
         strokeDasharray: svgPathLength,
@@ -192,12 +198,15 @@ export function initPreloaderIntro(lenis) {
                 delay: 1,
                 onComplete: () => {
                     resetScrollPosition(lenis);
+                    ScrollTrigger.refresh();
                     document.body.classList.remove("is-intro-active");
-                    lenis?.start();
                     gsap.set([".preloader-backdrop", ".intro-hero"], {
                         display: "none",
                     });
-                    ScrollTrigger.refresh();
+                    requestAnimationFrame(() => {
+                        ScrollTrigger.refresh();
+                        lenis?.start();
+                    });
                 },
             });
     });

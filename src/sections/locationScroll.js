@@ -5,14 +5,12 @@ import { ease, lerp } from "../shared/math.js";
 export function initLocationScroll() {
     const heroContent = document.querySelector(".hero-content");
     const heroImg = document.querySelector(".hero-img");
-    const heroImgElement = document.querySelector(".hero-img img");
     const heroMask = document.querySelector(".hero-mask");
     const heroGridOverlay = document.querySelector(".hero-grid-overlay");
     const anchorMarker = document.querySelector(".marker-1");
     const progressBar = document.querySelector(".hero-scroll-progress-bar");
     const lastStyle = {
         maskSize: "",
-        saturation: "",
         overlayOpacity: "",
         gridOpacity: "",
     };
@@ -57,30 +55,24 @@ export function initLocationScroll() {
                 });
 
                 let heroMaskSize;
-                let heroImgSaturation;
                 let heroImgOverlayOpacity;
 
                 if (self.progress <= 0.42) {
                     heroMaskSize = maskOutsideSize;
-                    heroImgSaturation = 1;
                     heroImgOverlayOpacity = 0.35;
                 } else if (self.progress <= 0.56) {
                     const phaseProgress = ease((self.progress - 0.42) / 0.14);
                     heroMaskSize = lerp(maskOutsideSize, maskGridSize, phaseProgress);
-                    heroImgSaturation = 1 - phaseProgress;
                     heroImgOverlayOpacity = 0.35 + phaseProgress * 0.35;
                 } else if (self.progress <= 0.72) {
                     heroMaskSize = maskGridSize;
-                    heroImgSaturation = 0;
                     heroImgOverlayOpacity = 0.7;
                 } else if (self.progress <= 0.88) {
                     const phaseProgress = ease((self.progress - 0.72) / 0.16);
                     heroMaskSize = lerp(maskGridSize, maskOutsideSize, phaseProgress);
-                    heroImgSaturation = phaseProgress;
                     heroImgOverlayOpacity = 0.7 - phaseProgress * 0.35;
                 } else {
                     heroMaskSize = maskOutsideSize;
-                    heroImgSaturation = 1;
                     heroImgOverlayOpacity = 0.35;
                 }
 
@@ -88,12 +80,6 @@ export function initLocationScroll() {
                 if (nextMaskSize !== lastStyle.maskSize) {
                     heroMask.style.setProperty("--mask-size", nextMaskSize);
                     lastStyle.maskSize = nextMaskSize;
-                }
-
-                const nextSaturation = heroImgSaturation.toFixed(3);
-                if (nextSaturation !== lastStyle.saturation) {
-                    heroImgElement.style.filter = `saturate(${nextSaturation})`;
-                    lastStyle.saturation = nextSaturation;
                 }
 
                 const nextOverlayOpacity = heroImgOverlayOpacity.toFixed(3);

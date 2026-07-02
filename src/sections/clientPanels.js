@@ -2,13 +2,16 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const smoothStep = (progress) => progress * progress * (3 - 2 * progress);
+const FLIP_PROGRESS_SPAN = 0.18;
+const SPREAD_START_PROGRESS = 0.36;
+const SETTLED_CARD_PROGRESS = 0.84;
 
 export function initClientPanels() {
     const servicesPanel = document.querySelector(".client-services-panel");
     const servicesHeader = document.querySelector(".client-services-header");
     const cards = gsap.utils.toArray(".client-panel-card");
 
-    if (!servicesPanel || !servicesHeader || cards.length === 0) {
+    if (!servicesPanel || cards.length === 0) {
         return;
     }
 
@@ -16,14 +19,17 @@ export function initClientPanels() {
         ScrollTrigger.getById("client-services-pin")?.kill();
         ScrollTrigger.getById("client-services-cards")?.kill();
 
-        gsap.set(servicesHeader, { y: "360%" });
+        if (servicesHeader) {
+            gsap.set(servicesHeader, { y: "360%" });
+        }
         cards.forEach((card, index) => {
             gsap.set(card, {
                 opacity: 0,
-                y: "-100%",
-                x: index === 0 ? "100%" : index === 1 ? "0%" : "-100%",
-                rotate: index === 0 ? -5 : index === 1 ? 0 : 5,
+                yPercent: -100,
+                xPercent: index === 0 ? 100 : index === 1 ? 0 : -100,
+                rotation: index === 0 ? -5 : index === 1 ? 0 : 5,
                 scale: 0.25,
+                force3D: true,
             });
             gsap.set(card.querySelector(".client-panel-card-inner"), { rotationY: 0 });
         });
@@ -45,10 +51,11 @@ export function initClientPanels() {
             scrub: 1,
             onUpdate: (self) => {
                 const progress = self.progress;
-                const headerProgress = gsap.utils.clamp(0, 1, progress / 0.9);
-                const headerY = gsap.utils.interpolate("360%", "0%", smoothStep(headerProgress));
-
-                gsap.set(servicesHeader, { y: headerY });
+                if (servicesHeader) {
+                    const headerProgress = gsap.utils.clamp(0, 1, progress / 0.9);
+                    const headerY = gsap.utils.interpolate("360%", "0%", smoothStep(headerProgress));
+                    gsap.set(servicesHeader, { y: headerY });
+                }
 
                 cards.forEach((card, index) => {
                     const delay = index * 0.5;
@@ -59,13 +66,13 @@ export function initClientPanels() {
                     );
                     const innerCard = card.querySelector(".client-panel-card-inner");
 
-                    let y;
+                    let yPercent;
                     if (cardProgress < 0.4) {
-                        y = gsap.utils.interpolate("-100%", "50%", smoothStep(cardProgress / 0.4));
+                        yPercent = gsap.utils.interpolate(-100, 50, smoothStep(cardProgress / 0.4));
                     } else if (cardProgress < 0.6) {
-                        y = gsap.utils.interpolate("50%", "0%", smoothStep((cardProgress - 0.4) / 0.2));
+                        yPercent = gsap.utils.interpolate(50, 0, smoothStep((cardProgress - 0.4) / 0.2));
                     } else {
-                        y = "0%";
+                        yPercent = 0;
                     }
 
                     let scale;
@@ -79,21 +86,39 @@ export function initClientPanels() {
 
                     const opacity = cardProgress < 0.2 ? smoothStep(cardProgress / 0.2) : 1;
 
-                    let x;
-                    let rotate;
+                    const spreadProgress = smoothStep(gsap.utils.clamp(
+                        0,
+                        1,
+                        (cardProgress - SPREAD_START_PROGRESS) / (SETTLED_CARD_PROGRESS - SPREAD_START_PROGRESS)
+                    ));
+                    const startXPercent = index === 0 ? 100 : index === 1 ? 0 : -100;
+                    const startRotate = index === 0 ? -5 : index === 1 ? 0 : 5;
+                    let xPercent = gsap.utils.interpolate(startXPercent, 0, spreadProgress);
+                    let rotate = gsap.utils.interpolate(startRotate, 0, spreadProgress);
                     let rotationY;
                     if (cardProgress < 0.6) {
-                        x = index === 0 ? "100%" : index === 1 ? "0%" : "-100%";
-                        rotate = index === 0 ? -5 : index === 1 ? 0 : 5;
                         rotationY = 0;
+                    } else if (cardProgress >= SETTLED_CARD_PROGRESS) {
+                        xPercent = 0;
+                        rotate = 0;
+                        rotationY = 180;
                     } else {
-                        const normalizedProgress = smoothStep((cardProgress - 0.6) / 0.4);
-                        x = gsap.utils.interpolate(index === 0 ? "100%" : index === 1 ? "0%" : "-100%", "0%", normalizedProgress);
-                        rotate = gsap.utils.interpolate(index === 0 ? -5 : index === 1 ? 0 : 5, 0, normalizedProgress);
-                        rotationY = normalizedProgress * 180;
+                        const flipProgress = smoothStep(gsap.utils.clamp(
+                            0,
+                            1,
+                            (cardProgress - 0.6) / FLIP_PROGRESS_SPAN
+                        ));
+                        rotationY = flipProgress * 180;
                     }
 
-                    gsap.set(card, { opacity, y, x, rotate, scale });
+                    gsap.set(card, {
+                        opacity,
+                        yPercent,
+                        xPercent,
+                        rotation: rotate,
+                        scale,
+                        force3D: true,
+                    });
                     gsap.set(innerCard, { rotationY });
                 });
             },

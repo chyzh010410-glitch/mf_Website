@@ -9,6 +9,7 @@ body.is-preloader-loading .pbc-svg-strokes {
 .intro-hero {
     position: fixed;
     inset: 0;
+    will-change: transform, opacity, clip-path;
 }
 
 .preloader-backdrop {

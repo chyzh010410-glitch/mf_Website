@@ -1,5 +1,8 @@
 .location-hero {
     height: 100svh;
+    overflow: hidden;
+    contain: layout paint;
+    background-color: var(--black);
 }
 
 .hero-img {
@@ -8,7 +11,9 @@
     width: 100%;
     height: 200svh;
     --overlay-opacity: 0.22;
-    will-change: transform;
+    will-change: transform, opacity;
+    transform: translateZ(0);
+    backface-visibility: hidden;
 }
 
 .hero-img::after {
@@ -18,10 +23,6 @@
     background-color: var(--dark);
     opacity: var(--overlay-opacity);
     will-change: opacity;
-}
-
-.hero-img img {
-    will-change: filter;
 }
 
 .hero-mask {

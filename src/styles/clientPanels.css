@@ -47,20 +47,16 @@
 }
 
 .client-services-header {
-    position: relative;
-    z-index: 2;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    will-change: transform;
+    display: none;
 }
 
 .client-panel-cards {
     position: absolute;
     inset: 0;
     z-index: 1;
-    display: flex;
-    align-items: flex-start;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 20rem));
+    align-items: start;
     justify-content: center;
     gap: 4rem;
     width: min(86rem, calc(100vw - 4rem));
@@ -72,8 +68,8 @@
 
 .client-panel-card {
     position: relative;
-    flex: 1;
-    max-width: 22rem;
+    width: 100%;
+    max-width: 20rem;
     aspect-ratio: 5 / 7;
     opacity: 0;
     transform-style: preserve-3d;
@@ -230,6 +226,7 @@ body.lang-en .client-panel-card-back p {
 @media (max-width: 1000px) {
     .client-panel-cards {
         width: min(34rem, calc(100vw - 2rem));
+        grid-template-columns: repeat(3, minmax(0, 10rem));
         padding-top: 21svh;
         gap: 1rem;
     }
@@ -269,6 +266,7 @@ body.lang-en .client-panel-card-back p {
 
     .client-panel-cards {
         width: min(22rem, calc(100vw - 1.5rem));
+        grid-template-columns: repeat(3, minmax(0, 1fr));
         padding-top: 24svh;
         gap: 0.55rem;
     }
