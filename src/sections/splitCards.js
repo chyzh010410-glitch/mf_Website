@@ -88,8 +88,8 @@ export function initSplitCards() {
     function resetDesktopStyles(isMobile = false) {
         stopFloating();
         gsap.set(stickyHeader, {
-            y: isMobile ? 0 : 40,
-            autoAlpha: isMobile ? 1 : 0,
+            y: isMobile ? 24 : 40,
+            autoAlpha: 0,
             pointerEvents: "none",
         });
         gsap.set(cardContainer, {
@@ -205,6 +205,9 @@ export function initSplitCards() {
         if (!isMobile) {
             cardTimeline.to(stickyHeader, { y: 0, autoAlpha: 1, duration: 0.15, ease: "none" }, 0.1);
             cardTimeline.to(stickyHeader, { y: 40, opacity: 0, duration: 0.22, ease: "none" }, 0.58);
+        } else {
+            cardTimeline.to(stickyHeader, { y: 0, autoAlpha: 1, duration: 0.18, ease: "none" }, 0.08);
+            cardTimeline.to(stickyHeader, { y: 24, opacity: 0, duration: 0.22, ease: "none" }, 0.58);
         }
         if (isMobile) {
             cardTimeline.to(cardContainer, { scale: mobileContainerScale, duration: 0.25, ease: "none" }, 0);
@@ -237,9 +240,9 @@ export function initSplitCards() {
                 end: "top top",
                 scrub: scrubAmount,
                 invalidateOnRefresh: true,
-                onEnter: () => showCards(false),
+                onEnter: () => showCards(isMobile),
                 onLeave: hideCards,
-                onEnterBack: () => showCards(false),
+                onEnterBack: () => showCards(isMobile),
                 onLeaveBack: () => {
                     gsap.set(["#card-1", "#card-2", "#card-3"], {
                         xPercent: 0,
@@ -247,7 +250,7 @@ export function initSplitCards() {
                         scale: 1,
                     });
                     gsap.set(cardContainer, { opacity: 1 });
-                    showCards(false);
+                    showCards(isMobile);
                 },
             },
         });
