@@ -64,13 +64,21 @@ body.lang-en .final-poster h1 {
 
 @media (max-width: 1000px) {
     .final-poster {
-        padding: 1.5rem;
+        min-height: 86svh;
+        padding: 3.5rem 1.5rem 2rem;
         grid-template-columns: 1fr;
-        align-content: center;
-        gap: 2rem;
+        align-content: start;
+        gap: 1.4rem;
+    }
+
+    .final-poster::before {
+        background:
+            linear-gradient(90deg, rgba(4, 17, 15, 0.78), rgba(16, 38, 34, 0.42)),
+            url("/assets/forest-canopy-mobile.jpg") center top / cover;
+        transform: none;
     }
 
     .final-poster h1 {
-        font-size: clamp(3.5rem, 18vw, 7rem);
+        font-size: clamp(3.2rem, 17vw, 6.4rem);
     }
 }

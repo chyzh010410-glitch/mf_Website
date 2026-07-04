@@ -3,6 +3,11 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
 export function initSmoothScroll() {
+    const isTouchDevice = window.matchMedia("(pointer: coarse)").matches;
+    if (isTouchDevice) {
+        return null;
+    }
+
     const lenis = new Lenis({
         lerp: 0.16,
         smoothWheel: true,

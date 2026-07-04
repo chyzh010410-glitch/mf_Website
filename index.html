@@ -4,8 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="preload" as="image" href="/assets/forest-hero-03-upscaled-rotated.jpg">
-    <link rel="preload" as="image" href="/assets/forest-moss-card.jpg">
+    <link rel="preload" as="image" href="/assets/forest-hero-03.jpg" media="(max-width: 800px)">
+    <link rel="preload" as="image" href="/assets/forest-hero-03-upscaled-rotated.jpg" media="(min-width: 801px)">
+    <link rel="preload" as="image" href="/assets/forest-moss-card-mobile.jpg" media="(max-width: 1000px)">
+    <link rel="preload" as="image" href="/assets/forest-moss-card.jpg" media="(min-width: 1001px)">
+    <link rel="preload" as="image" href="/assets/forest-canopy-mobile.jpg" media="(max-width: 700px)">
     <title>林木自然系统</title>
     <script>
         if ("scrollRestoration" in history) {
@@ -114,12 +117,12 @@
         </div>
 
         <button class="preloader-btn-container" type="button" aria-label="进入林间">
-            <img id="pbc-logo" src="/assets/logo-light.jpg" alt="">
+            <img id="pbc-logo" src="/assets/logo-light-transparent.png" alt="">
             <p id="pbc-label">进入林间</p>
             <p id="pbc-outro-label">绿意已连接</p>
 
             <span class="pbc-svg-strokes" aria-hidden="true">
-                <svg fill="none" xmlns="http://www.w3.org/2000/svg">
+                <svg viewBox="0 0 320 320" preserveAspectRatio="xMidYMid meet" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <circle class="stroke-track" cx="160" cy="160" r="155" stroke="#1f463d" stroke-width="2"
                         stroke-dasharray="974" stroke-dashoffset="974" />
                     <circle class="stroke-progress" cx="160" cy="160" r="155" stroke="#b8f1d1" stroke-width="2"
@@ -138,7 +141,10 @@
     <main class="page-shell">
         <section class="location-hero">
             <div class="hero-img">
-                <img src="/assets/forest-hero-03-upscaled-rotated.jpg" alt="">
+                <picture>
+                    <source media="(max-width: 800px)" srcset="/assets/forest-hero-03.jpg">
+                    <img src="/assets/forest-hero-03-upscaled-rotated.jpg" alt="">
+                </picture>
             </div>
             <div class="hero-mask"></div>
 

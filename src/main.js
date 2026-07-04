@@ -11,6 +11,9 @@ import { initSmoothScroll, resetScrollPosition } from "./shared/scroll.js";
 import { initLanguageSystem } from "./shared/i18n.js";
 
 gsap.registerPlugin(ScrollTrigger, SplitText, CustomEase);
+ScrollTrigger.config({
+    ignoreMobileResize: true,
+});
 CustomEase.create("hop", "0.9, 0, 0.1, 1");
 CustomEase.create("glide", "0.8, 0, 0.2, 1");
 

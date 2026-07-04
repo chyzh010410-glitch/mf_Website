@@ -2,9 +2,11 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { SplitText } from "gsap/SplitText";
 import { resetScrollPosition } from "../shared/scroll.js";
+import { BREAKPOINTS, isViewportAtMost } from "../shared/viewport.js";
 
 export function initPreloaderIntro(lenis) {
     let preloaderComplete = false;
+    const isMobile = isViewportAtMost(BREAKPOINTS.locationMobile);
 
     lenis?.stop();
 
@@ -18,7 +20,7 @@ export function initPreloaderIntro(lenis) {
     const svgPathLength = btnOutlineTrack.getTotalLength();
 
     heroImage?.decode?.().catch(() => {});
-    cardImage.src = "/assets/forest-moss-card.jpg";
+    cardImage.src = isMobile ? "/assets/forest-moss-card-mobile.jpg" : "/assets/forest-moss-card.jpg";
     cardImage.decode?.().catch(() => {});
 
     gsap.set([btnOutlineTrack, btnOutlineProgress], {
@@ -190,7 +192,9 @@ export function initPreloaderIntro(lenis) {
                     stagger: 0.05,
                 },
                 "-=1.75",
-            )
+            );
+
+        exitTl
             .add("rippleStart", "+=0.32")
             .set(".ripple-reveal", {
                 opacity: 1,

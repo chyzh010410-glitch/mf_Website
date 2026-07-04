@@ -1,45 +1,64 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { BREAKPOINTS, getAnimationViewportHeight, isViewportAtMost, onWidthChange } from "../shared/viewport.js";
 
 const smoothStep = (progress) => progress * progress * (3 - 2 * progress);
 const FLIP_PROGRESS_SPAN = 0.18;
 const SPREAD_START_PROGRESS = 0.36;
 const SETTLED_CARD_PROGRESS = 0.84;
+const FLOAT_START_PROGRESS = 0.04;
 
 export function initClientPanels() {
     const servicesPanel = document.querySelector(".client-services-panel");
     const servicesHeader = document.querySelector(".client-services-header");
     const cards = gsap.utils.toArray(".client-panel-card");
+    const cardStates = cards.map((card, index) => ({
+        card,
+        innerCard: card.querySelector(".client-panel-card-inner"),
+        startXPercent: index === 0 ? 100 : index === 1 ? 0 : -100,
+        startRotate: index === 0 ? -5 : index === 1 ? 0 : 5,
+        delay: index * 0.5,
+    }));
+    const setHeaderY = servicesHeader ? gsap.quickSetter(servicesHeader, "y") : null;
+    let isFloating = false;
 
     if (!servicesPanel || cards.length === 0) {
         return;
     }
 
     function setupPanelScroll() {
+        const isMobile = isViewportAtMost(BREAKPOINTS.clientPanelsMobile);
+        const viewportHeight = getAnimationViewportHeight(isMobile);
+        const pinDistance = viewportHeight * 2;
+        const cardsDistance = isMobile ? viewportHeight * 1.55 : viewportHeight * 3;
+
         ScrollTrigger.getById("client-services-pin")?.kill();
         ScrollTrigger.getById("client-services-cards")?.kill();
+        servicesPanel.classList.remove("is-floating");
+        isFloating = false;
 
         if (servicesHeader) {
             gsap.set(servicesHeader, { y: "360%" });
         }
-        cards.forEach((card, index) => {
-            gsap.set(card, {
+        cardStates.forEach((state) => {
+            gsap.set(state.card, {
                 opacity: 0,
                 yPercent: -100,
-                xPercent: index === 0 ? 100 : index === 1 ? 0 : -100,
-                rotation: index === 0 ? -5 : index === 1 ? 0 : 5,
+                xPercent: state.startXPercent,
+                rotation: state.startRotate,
                 scale: 0.25,
                 force3D: true,
             });
-            gsap.set(card.querySelector(".client-panel-card-inner"), { rotationY: 0 });
+            gsap.set(state.innerCard, { rotationY: 0 });
         });
 
         ScrollTrigger.create({
             id: "client-services-pin",
             trigger: servicesPanel,
             start: "top top",
-            end: `+=${window.innerHeight * 2}`,
+            end: `+=${pinDistance}`,
             pin: true,
+            pinType: "fixed",
             pinSpacing: true,
         });
 
@@ -47,24 +66,29 @@ export function initClientPanels() {
             id: "client-services-cards",
             trigger: servicesPanel,
             start: "top 45%",
-            end: `+=${window.innerHeight * 3}`,
+            end: `+=${cardsDistance}`,
             scrub: 1,
+            invalidateOnRefresh: true,
             onUpdate: (self) => {
                 const progress = self.progress;
+                const shouldFloat = progress >= FLOAT_START_PROGRESS;
+                if (shouldFloat !== isFloating) {
+                    servicesPanel.classList.toggle("is-floating", shouldFloat);
+                    isFloating = shouldFloat;
+                }
+
                 if (servicesHeader) {
                     const headerProgress = gsap.utils.clamp(0, 1, progress / 0.9);
                     const headerY = gsap.utils.interpolate("360%", "0%", smoothStep(headerProgress));
-                    gsap.set(servicesHeader, { y: headerY });
+                    setHeaderY(headerY);
                 }
 
-                cards.forEach((card, index) => {
-                    const delay = index * 0.5;
+                cardStates.forEach((state) => {
                     const cardProgress = gsap.utils.clamp(
                         0,
                         1,
-                        (progress - delay * 0.1) / (0.9 - delay * 0.1)
+                        (progress - state.delay * 0.1) / (0.9 - state.delay * 0.1),
                     );
-                    const innerCard = card.querySelector(".client-panel-card-inner");
 
                     let yPercent;
                     if (cardProgress < 0.4) {
@@ -89,12 +113,10 @@ export function initClientPanels() {
                     const spreadProgress = smoothStep(gsap.utils.clamp(
                         0,
                         1,
-                        (cardProgress - SPREAD_START_PROGRESS) / (SETTLED_CARD_PROGRESS - SPREAD_START_PROGRESS)
+                        (cardProgress - SPREAD_START_PROGRESS) / (SETTLED_CARD_PROGRESS - SPREAD_START_PROGRESS),
                     ));
-                    const startXPercent = index === 0 ? 100 : index === 1 ? 0 : -100;
-                    const startRotate = index === 0 ? -5 : index === 1 ? 0 : 5;
-                    let xPercent = gsap.utils.interpolate(startXPercent, 0, spreadProgress);
-                    let rotate = gsap.utils.interpolate(startRotate, 0, spreadProgress);
+                    let xPercent = gsap.utils.interpolate(state.startXPercent, 0, spreadProgress);
+                    let rotate = gsap.utils.interpolate(state.startRotate, 0, spreadProgress);
                     let rotationY;
                     if (cardProgress < 0.6) {
                         rotationY = 0;
@@ -106,12 +128,12 @@ export function initClientPanels() {
                         const flipProgress = smoothStep(gsap.utils.clamp(
                             0,
                             1,
-                            (cardProgress - 0.6) / FLIP_PROGRESS_SPAN
+                            (cardProgress - 0.6) / FLIP_PROGRESS_SPAN,
                         ));
                         rotationY = flipProgress * 180;
                     }
 
-                    gsap.set(card, {
+                    gsap.set(state.card, {
                         opacity,
                         yPercent,
                         xPercent,
@@ -119,14 +141,14 @@ export function initClientPanels() {
                         scale,
                         force3D: true,
                     });
-                    gsap.set(innerCard, { rotationY });
+                    gsap.set(state.innerCard, { rotationY });
                 });
             },
         });
     }
 
     setupPanelScroll();
-    window.addEventListener("resize", () => {
+    onWidthChange(() => {
         setupPanelScroll();
         ScrollTrigger.refresh();
     });

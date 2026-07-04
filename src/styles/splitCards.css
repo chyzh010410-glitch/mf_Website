@@ -3,7 +3,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    background-color: var(--black);
+    background: linear-gradient(135deg, #a8ddba, #c8ebcb 56%, #e1f3d8);
     overflow: hidden;
     contain: layout paint;
     transform: translateZ(0);
@@ -131,6 +131,7 @@
     background-repeat: no-repeat;
     background-color: var(--black);
     transform: rotateY(0deg);
+    z-index: 2;
 }
 
 .card-back {
@@ -140,6 +141,7 @@
     text-align: center;
     transform: rotateY(180deg);
     padding: 2rem;
+    z-index: 1;
 }
 
 .card-back span {
@@ -179,10 +181,12 @@ body.lang-en .card-back p {
 
 #card-2 .card-back {
     background-color: var(--card-2);
+    color: var(--light);
 }
 
 #card-3 .card-back {
     background-color: var(--card-3);
+    color: var(--light);
 }
 
 .scroll-progress-bar {
@@ -209,32 +213,44 @@ body.lang-en .card-back p {
 
 @media (max-width: 1000px) {
     .sticky {
-        flex-direction: column;
-        height: max-content;
-        padding: 4rem 2rem;
+        height: 100svh;
+        padding: 0;
+        transform: none;
     }
 
     .sticky-header {
-        position: relative;
-        top: 0;
-        left: 0;
-        transform: none;
-        margin-bottom: 4rem;
+        position: absolute;
+        top: 18%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: min(92vw, 28rem);
     }
 
     .sticky-header h1 {
-        transform: none;
-        opacity: 1;
+        font-size: clamp(2rem, 11vw, 3.2rem);
+        line-height: 1.08;
     }
 
     .card-container {
-        width: 100%;
-        flex-direction: column;
-        gap: 2rem;
+        width: 92%;
+        flex-direction: row;
+        gap: 0;
+        transform: translateY(40px);
+        perspective: 900px;
+        will-change: transform, opacity;
     }
 
     .card-photo-composite {
-        display: none;
+        display: block;
+        position: absolute;
+        inset: 0;
+        width: auto;
+        max-width: none;
+        aspect-ratio: auto;
+        margin: 0;
+        background-image: url("/assets/forest-moss-card-mobile.jpg");
+        background-size: 100% 100%;
+        will-change: opacity, visibility;
     }
 
     .scroll-progress-bar {
@@ -242,22 +258,62 @@ body.lang-en .card-back p {
     }
 
     .card {
-        width: 100%;
-        max-width: 400px;
-        margin: 0 auto;
-        border-radius: 20px !important;
+        width: auto;
+        max-width: none;
+        margin: 0;
+        aspect-ratio: 5/7;
+        min-height: 0;
+        max-height: none;
+        will-change: transform, opacity;
+    }
+
+    .card-back {
+        display: flex;
+        padding: 0.7rem;
+    }
+
+    .card-back span {
+        top: 0.65rem;
+        left: 0.65rem;
+        font-size: 0.55rem;
+    }
+
+    .card-back p {
+        font-size: clamp(0.62rem, 2.9vw, 0.95rem);
+        line-height: 1.18;
+        letter-spacing: 0;
     }
 
     .card-front {
-        background-size: cover;
-        background-position: center;
+        background-image: url("/assets/forest-moss-card-mobile.jpg");
+        background-size: var(--card-bg-width, 300%) 100%;
+        background-position: var(--card-bg-x, center) center;
+        will-change: auto;
     }
 
-    #card-1,
-    #card-2,
-    #card-3,
+    body.lang-en .card-back p {
+        font-size: clamp(0.6rem, 2.8vw, 0.9rem);
+        line-height: 1.1;
+    }
+
+    .scroll-progress-bar {
+        right: 1rem;
+        height: 7rem;
+    }
+
+}
+
+@media (max-width: 420px) {
     .card-back {
-        transform: none;
+        padding: 0.55rem;
     }
 
+    .card-back span {
+        top: 0.55rem;
+        left: 0.55rem;
+    }
+
+    .card-back p {
+        font-size: clamp(0.54rem, 2.75vw, 0.78rem);
+    }
 }

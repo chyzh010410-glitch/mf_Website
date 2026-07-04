@@ -1,6 +1,7 @@
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ease, lerp } from "../shared/math.js";
+import { BREAKPOINTS, getAnimationViewportHeight, isViewportAtMost, onWidthChange } from "../shared/viewport.js";
 
 export function initLocationScroll() {
     const heroContent = document.querySelector(".hero-content");
@@ -13,14 +14,30 @@ export function initLocationScroll() {
         maskSize: "",
         overlayOpacity: "",
         gridOpacity: "",
+        progress: "",
     };
 
     function setupHeroScroll() {
-        const viewportHeight = window.innerHeight;
+        const isMobile = isViewportAtMost(BREAKPOINTS.locationMobile);
+        const viewportHeight = getAnimationViewportHeight(isMobile);
         const heroContentMoveDistance = heroContent.offsetHeight - viewportHeight;
         const heroImgMoveDistance = heroImg.offsetHeight - viewportHeight;
-        const maskOutsideSize = window.innerWidth <= 800 ? 280 : 240;
-        const maskGridSize = window.innerWidth <= 800 ? 116 : 68;
+        const maskOutsideSize = 240;
+        const maskGridSize = 68;
+        const mobileMaskOutsideRadius = 86;
+        const mobileMaskGridRadius = 18;
+        const maskStep = isMobile ? 0.4 : 0.001;
+        const maskRadiusStep = 0.25;
+        const opacityStep = isMobile ? 0.01 : 0.001;
+        const setHeroContentY = gsap.quickSetter(heroContent, "y", "px");
+        const setHeroImgY = gsap.quickSetter(heroImg, "y", "px");
+        const setGridOpacity = gsap.quickSetter(heroGridOverlay, "opacity");
+        const setMarkerOpacity = gsap.quickSetter(anchorMarker, "opacity");
+
+        lastStyle.maskSize = "";
+        lastStyle.overlayOpacity = "";
+        lastStyle.gridOpacity = "";
+        lastStyle.progress = "";
 
         ScrollTrigger.getById("location-scroll")?.kill();
 
@@ -30,16 +47,17 @@ export function initLocationScroll() {
             start: "top top",
             end: `+=${viewportHeight * 4}px`,
             pin: true,
+            pinType: "fixed",
             pinSpacing: true,
             scrub: 1,
             onUpdate: (self) => {
-                gsap.set(progressBar, {
-                    "--progress": self.progress,
-                });
+                const nextProgress = self.progress.toFixed(isMobile ? 3 : 4);
+                if (nextProgress !== lastStyle.progress) {
+                    progressBar.style.setProperty("--progress", nextProgress);
+                    lastStyle.progress = nextProgress;
+                }
 
-                gsap.set(heroContent, {
-                    y: -self.progress * heroContentMoveDistance,
-                });
+                setHeroContentY(-self.progress * heroContentMoveDistance);
 
                 let heroImgProgress;
                 if (self.progress <= 0.45) {
@@ -50,9 +68,7 @@ export function initLocationScroll() {
                     heroImgProgress = 0.65 + ease((self.progress - 0.75) / 0.25) * 0.35;
                 }
 
-                gsap.set(heroImg, {
-                    y: heroImgProgress * heroImgMoveDistance,
-                });
+                setHeroImgY(heroImgProgress * heroImgMoveDistance);
 
                 let heroMaskSize;
                 let heroImgOverlayOpacity;
@@ -76,13 +92,30 @@ export function initLocationScroll() {
                     heroImgOverlayOpacity = 0.35;
                 }
 
-                const nextMaskSize = `${heroMaskSize.toFixed(3)}%`;
-                if (nextMaskSize !== lastStyle.maskSize) {
-                    heroMask.style.setProperty("--mask-size", nextMaskSize);
-                    lastStyle.maskSize = nextMaskSize;
+                if (isMobile) {
+                    const maskProgress = gsap.utils.clamp(
+                        0,
+                        1,
+                        (heroMaskSize - maskGridSize) / (maskOutsideSize - maskGridSize),
+                    );
+                    const rawMaskRadius = gsap.utils.interpolate(mobileMaskGridRadius, mobileMaskOutsideRadius, maskProgress);
+                    const roundedMaskRadius = Math.round(rawMaskRadius / maskRadiusStep) * maskRadiusStep;
+                    const nextMaskRadius = `${roundedMaskRadius.toFixed(2)}vmax`;
+                    if (nextMaskRadius !== lastStyle.maskSize) {
+                        heroMask.style.setProperty("--mask-radius", nextMaskRadius);
+                        lastStyle.maskSize = nextMaskRadius;
+                    }
+                } else {
+                    const roundedMaskSize = Math.round(heroMaskSize / maskStep) * maskStep;
+                    const nextMaskSize = `${roundedMaskSize.toFixed(3)}%`;
+                    if (nextMaskSize !== lastStyle.maskSize) {
+                        heroMask.style.setProperty("--mask-size", nextMaskSize);
+                        lastStyle.maskSize = nextMaskSize;
+                    }
                 }
 
-                const nextOverlayOpacity = heroImgOverlayOpacity.toFixed(3);
+                const roundedOverlayOpacity = Math.round(heroImgOverlayOpacity / opacityStep) * opacityStep;
+                const nextOverlayOpacity = roundedOverlayOpacity.toFixed(isMobile ? 2 : 3);
                 if (nextOverlayOpacity !== lastStyle.overlayOpacity) {
                     heroImg.style.setProperty("--overlay-opacity", nextOverlayOpacity);
                     lastStyle.overlayOpacity = nextOverlayOpacity;
@@ -101,11 +134,12 @@ export function initLocationScroll() {
                     heroGridOpacity = 0;
                 }
 
-                const nextGridOpacity = heroGridOpacity.toFixed(3);
+                const roundedGridOpacity = Math.round(heroGridOpacity / opacityStep) * opacityStep;
+                const nextGridOpacity = roundedGridOpacity.toFixed(isMobile ? 2 : 3);
                 if (nextGridOpacity !== lastStyle.gridOpacity) {
-                    gsap.set([heroGridOverlay, anchorMarker], {
-                        opacity: nextGridOpacity,
-                    });
+                    setGridOpacity(nextGridOpacity);
+                    setMarkerOpacity(nextGridOpacity);
+                    anchorMarker.classList.toggle("is-pulsing", heroGridOpacity > 0.01);
                     lastStyle.gridOpacity = nextGridOpacity;
                 }
             },
@@ -113,7 +147,7 @@ export function initLocationScroll() {
     }
 
     setupHeroScroll();
-    window.addEventListener("resize", () => {
+    onWidthChange(() => {
         setupHeroScroll();
         ScrollTrigger.refresh();
     });

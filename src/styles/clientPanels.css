@@ -15,9 +15,9 @@
     position: absolute;
     inset: 0;
     background:
-        linear-gradient(180deg, rgba(4, 17, 15, 0.72), rgba(4, 17, 15, 0.92)),
-        url("/assets/forest-canopy.jpg") center / cover;
-    opacity: 0.42;
+        radial-gradient(circle at 50% 35%, rgba(24, 75, 58, 0.42), transparent 32rem),
+        linear-gradient(145deg, #061a14 0%, #0b2a22 52%, #04110f 100%);
+    opacity: 1;
     transform: scale(1.04);
 }
 
@@ -81,6 +81,11 @@
     inset: 0;
     transform-style: preserve-3d;
     animation: clientPanelFloat 2.25s ease-in-out infinite;
+    animation-play-state: paused;
+}
+
+.client-services-panel.is-floating .client-panel-card-wrapper {
+    animation-play-state: running;
 }
 
 #client-panel-card-2 .client-panel-card-wrapper {
@@ -250,6 +255,18 @@ body.lang-en .client-panel-card-back p {
 }
 
 @media (max-width: 700px) {
+    .client-about-panel::before {
+        background:
+            radial-gradient(circle at 50% 35%, rgba(24, 75, 58, 0.42), transparent 18rem),
+            linear-gradient(145deg, #061a14 0%, #0b2a22 52%, #04110f 100%);
+    }
+
+    .client-services-panel::before {
+        background:
+            linear-gradient(90deg, rgba(4, 17, 15, 0.9), rgba(22, 51, 41, 0.68)),
+            url("/assets/forest-hero-mobile.jpg") center / cover;
+    }
+
     .client-about-panel h1,
     .client-services-header h1 {
         width: min(10ch, calc(100vw - 2rem));
@@ -278,6 +295,7 @@ body.lang-en .client-panel-card-back p {
     .client-panel-card-front,
     .client-panel-card-back {
         border-radius: 0.75rem;
+        box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.18);
     }
 
     .client-panel-card-front span,
